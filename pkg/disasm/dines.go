@@ -22,8 +22,8 @@ func (dines *Dines) InValid(data []byte) bool {
 		return false
 	}
 
-	for i, d := range data {
-		if d != MagicNumber[i] {
+	for i := 0; i < len(MagicNumber); i++ {
+		if data[i] != MagicNumber[i] {
 			return false
 		}
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -35,10 +36,24 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	filePath := c.String("rom")
-	_, err := disasm.NewDines(filePath)
+	romFile := c.String("rom")
+
+	data, err := ioutil.ReadFile(romFile)
 	if err != nil {
 		return err
 	}
+
+	dines, err := disasm.NewDines()
+	if err != nil {
+		return err
+	}
+
+	result, err := dines.Disassemble(data)
+	if err != nil {
+		return err
+	}
+
+	dines.Dump(result)
+
 	return nil
 }

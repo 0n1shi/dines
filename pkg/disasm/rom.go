@@ -1,5 +1,7 @@
 package disasm
 
+var MagicNumber = []byte{0x4E, 0x45, 0x53, 0x1A}
+
 const ProgramBankSize = 0x4000
 
 const CharacterBankSize = 0x2000

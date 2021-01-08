@@ -10,14 +10,14 @@ func NewDines() (*Dines, error) {
 }
 
 func (dines *Dines) Disassemble(data []byte) (*Result, error) {
-	valid := dines.InValid(data)
+	valid := dines.isValid(data)
 	if !valid {
 		return nil, errors.New("invalid rom")
 	}
 	return &Result{}, nil
 }
 
-func (dines *Dines) InValid(data []byte) bool {
+func (dines *Dines) isValid(data []byte) bool {
 	if len(data) < 4 {
 		return false
 	}

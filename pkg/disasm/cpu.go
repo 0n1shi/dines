@@ -138,6 +138,17 @@ var OpecodeMap = map[OpcodeType]string{
 	OpcodeBRK: "brk",
 }
 
+var SectionDividers = []OpcodeType{OpcodeJMP, OpcodeRTS, OpcodeRTI}
+
+func IsEndOfSubRoutinue(opcodeType OpcodeType) bool {
+	for _, d := range SectionDividers {
+		if opcodeType == d {
+			return true
+		}
+	}
+	return false
+}
+
 type Instruction struct {
 	OpcodeType     OpcodeType
 	AddressingType AddressingType

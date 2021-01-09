@@ -1,28 +1,23 @@
 package disasm
 
 import (
-	"encoding/json"
 	errs "errors"
-	"fmt"
 
 	"github.com/pkg/errors"
 )
 
-type Dines struct {
-}
-
-func (dines *Dines) Disassemble(data []byte) (*Result, error) {
-	valid := dines.isValid(data)
+func Disassemble(data []byte) (*Result, error) {
+	valid := isValidROM(data)
 	if !valid {
 		return nil, errs.New("invalid rom")
 	}
 
-	header, err := dines.disassembleHeader(data)
+	header, err := disassembleHeader(data)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	sections, err := dines.disassembleCode(data)
+	sections, err := disassembleCode(data)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -33,7 +28,7 @@ func (dines *Dines) Disassemble(data []byte) (*Result, error) {
 	}, nil
 }
 
-func (dines *Dines) isValid(data []byte) bool {
+func isValidROM(data []byte) bool {
 	if len(data) < 4 {
 		return false
 	}
@@ -47,7 +42,7 @@ func (dines *Dines) isValid(data []byte) bool {
 	return true
 }
 
-func (dines *Dines) disassembleHeader(data []byte) (*Header, error) {
+func disassembleHeader(data []byte) (*Header, error) {
 	header := &Header{}
 	header.ProgBankCount = int(data[4])
 	header.CharBankCount = int(data[5])
@@ -55,7 +50,7 @@ func (dines *Dines) disassembleHeader(data []byte) (*Header, error) {
 	return header, nil
 }
 
-func (dines *Dines) disassembleCode(data []byte) ([]*Section, error) {
+func disassembleCode(data []byte) ([]*Section, error) {
 	sections := []*Section{}
 	section := &Section{}
 
@@ -92,9 +87,4 @@ func (dines *Dines) disassembleCode(data []byte) ([]*Section, error) {
 	sections = append(sections, section)
 
 	return sections, nil
-}
-
-func (dines *Dines) Dump(result *Result) {
-	d, _ := json.Marshal(result)
-	fmt.Print(string(d))
 }

@@ -28,7 +28,6 @@ func TestIsValidROM(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		d := &Dines{}
-		assert.Equal(d.isValid(test.Input), test.Expected)
+		assert.Equal(isValidROM(test.Input), test.Expected)
 	}
 }

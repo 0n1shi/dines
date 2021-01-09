@@ -43,10 +43,7 @@ func run(c *cli.Context) error {
 		return err
 	}
 
-	dines, err := disasm.NewDines()
-	if err != nil {
-		return err
-	}
+	dines := disasm.NewDines()
 
 	result, err := dines.Disassemble(data)
 	if err != nil {

@@ -1,36 +1,34 @@
 package disasm
 
-// func TestNewDines(t *testing.T) {
-// 	assert := assert.New(t)
+import (
+	"testing"
 
-// 	type Expected struct {
-// 		dines *Dines
-// 		err   error
-// 	}
+	"github.com/stretchr/testify/assert"
+)
 
-// 	var tests = []struct {
-// 		input    string
-// 		expected Expected
-// 	}{
-// 		{
-// 			input: "example.rom",
-// 			expected: Expected{
-// 				dines: &Dines{romFilePath: "example.rom"},
-// 				err:   nil,
-// 			},
-// 		},
-// 		{
-// 			input: "",
-// 			expected: Expected{
-// 				dines: nil,
-// 				err:   errors.New("ROM file path is empty"),
-// 			},
-// 		},
-// 	}
+func TestIsValidROM(t *testing.T) {
+	assert := assert.New(t)
 
-// 	for _, test := range tests {
-// 		d, e := NewDines(test.input)
-// 		assert.Equal(d, test.expected.dines)
-// 		assert.Equal(e, test.expected.err)
-// 	}
-// }
+	tests := []struct {
+		Input    []byte
+		Expected bool
+	}{
+		{
+			Input:    MagicNumber,
+			Expected: true,
+		},
+		{
+			Input:    []byte{},
+			Expected: false,
+		},
+		{
+			Input:    []byte{0xde, 0xad, 0xbe, 0xef},
+			Expected: false,
+		},
+	}
+
+	for _, test := range tests {
+		d := NewDines()
+		assert.Equal(d.isValid(test.Input), test.Expected)
+	}
+}

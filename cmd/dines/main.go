@@ -20,6 +20,11 @@ func main() {
 			Usage:    "A file path of NES ROM",
 			Required: true,
 		},
+		&cli.StringFlag{
+			Name:        "output",
+			Usage:       "output format, \"json\" or \"yaml\", default is like a typical diassembler",
+			DefaultText: "normal",
+		},
 	}
 
 	app := cli.App{
@@ -48,7 +53,9 @@ func run(c *cli.Context) error {
 		return err
 	}
 
-	disasm.Dump(result, disasm.DumpMethodNormal)
+	output := c.String("output")
+
+	disasm.Dump(result, disasm.DumpMethod(output))
 
 	return nil
 }

@@ -76,7 +76,7 @@ func dumpInstruction(line *Line, currentAddr int) {
 	if line.Instruction == nil { // invalid opcode, must be .db
 		fmt.Print("db ")
 		for _, d := range line.Data {
-			fmt.Printf("#$%02X ", d)
+			fmt.Printf("%02X ", d)
 		}
 		return
 	}

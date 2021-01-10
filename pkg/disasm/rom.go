@@ -59,7 +59,12 @@ var MapperTypeMap = map[int]string{
 }
 
 type Header struct {
-	ProgBankCount int `json:"program_bank_count" yaml:"program_bank_count"`
-	CharBankCount int `json:"character_banck_count" yaml:"character_banck_count"`
-	Mapper        int `json:"mapper_type" yaml:"mapper_type"`
+	ProgramBank   *Bank `json:"program_bank" yaml:"program_bank"`
+	CharacterBank *Bank `json:"character_bank" yaml:"character_bank"`
+	Mapper        int   `json:"mapper_type" yaml:"mapper_type"`
+}
+
+type Bank struct {
+	Count int `json:"count" yamll:"count"`
+	Size  int `json:"size" yamll:"size"`
 }

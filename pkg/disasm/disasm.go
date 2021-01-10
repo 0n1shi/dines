@@ -46,8 +46,14 @@ func isValidROM(data []byte) bool {
 
 func disassembleHeader(data []byte) (*Header, error) {
 	header := &Header{}
-	header.ProgBankCount = int(data[4])
-	header.CharBankCount = int(data[5])
+	header.ProgramBank = &Bank{
+		Count: int(data[4]),
+		Size:  int(data[4]) * ProgramBankSize,
+	}
+	header.CharacterBank = &Bank{
+		Count: int(data[5]),
+		Size:  int(data[5]) * ProgramBankSize,
+	}
 	header.Mapper = int(data[7]&0xF0) | int((data[6]&0xF0)>>4)
 	return header, nil
 }

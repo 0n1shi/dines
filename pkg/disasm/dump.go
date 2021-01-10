@@ -37,6 +37,7 @@ func Dump(result *Result, method DumpMethod) {
 }
 
 func dumpNormal(result *Result) {
+	dumpHeader(result.Header)
 	address := 0x8000
 	for _, section := range result.Sections {
 		for _, line := range section.Lines {
@@ -58,8 +59,15 @@ func dumpNormal(result *Result) {
 	}
 }
 
+func dumpHeader(header *Header) {
+	fmt.Println("magic number: NES")
+	fmt.Printf("program Bank: %d (%d byte)\n", header.ProgramBank.Count, header.ProgramBank.Size)
+	fmt.Printf("character Bank: %d (%d byte)\n", header.CharacterBank.Count, header.CharacterBank.Size)
+	fmt.Printf("mapper: %d (%s)\n\n", header.Mapper, MapperTypeMap[header.Mapper])
+}
+
 func dumpAddress(addr int) {
-	fmt.Printf("0x%04X", addr)
+	fmt.Printf("0x%04X:", addr)
 }
 
 func dumpRawData(line *Line) {
@@ -82,7 +90,7 @@ func dumpInstruction(line *Line, currentAddr int) {
 	}
 
 	arg := 0
-	for i := 1; i < len(line.Data); i++ {
+	for i := len(line.Data) - 1; i > 0; i-- {
 		arg = (arg << 8) | line.Data[i]
 	}
 
@@ -111,6 +119,6 @@ func dumpInstruction(line *Line, currentAddr int) {
 	case AddressingTypeIndirectY:
 		fmt.Printf("($%02X), Y", arg)
 	case AddressingTypeRelative:
-		fmt.Printf("$%04X", (currentAddr+2)+arg)
+		fmt.Printf("$%04X      # to $%04X", arg, (currentAddr+2)+arg)
 	}
 }

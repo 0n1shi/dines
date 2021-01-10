@@ -11,6 +11,6 @@ type Section struct {
 }
 
 type Line struct {
-	Data        []byte       `json:"data" yaml:"data"`
+	Data        []int        `json:"data" yaml:"data"`
 	Instruction *Instruction `json:"instruction" yaml:"instruction"`
 }

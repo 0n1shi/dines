@@ -62,7 +62,7 @@ func disassembleCode(data []byte) ([]*Section, error) {
 
 		// invalid opcode, just store a data (byte)
 		if !ok {
-			line.Data = append(line.Data, opcode)
+			line.Data = append(line.Data, int(opcode))
 			index++
 			section.Lines = append(section.Lines, line)
 			section.HasInvalidOpcode = true
@@ -72,7 +72,7 @@ func disassembleCode(data []byte) ([]*Section, error) {
 		// store the instruction and the binary
 		line.Instruction = &ins
 		for i := index; i < index+line.Instruction.Bytes; i++ {
-			line.Data = append(line.Data, data[i])
+			line.Data = append(line.Data, int(data[i]))
 		}
 		section.Lines = append(section.Lines, line)
 		index += ins.Bytes

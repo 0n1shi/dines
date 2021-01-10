@@ -48,7 +48,7 @@ func run(c *cli.Context) error {
 		return err
 	}
 
-	disasm.Dump(result)
+	disasm.Dump(result, disasm.DumpMethodNormal)
 
 	return nil
 }

@@ -119,6 +119,6 @@ func dumpInstruction(line *Line, currentAddr int) {
 	case AddressingTypeIndirectY:
 		fmt.Printf("($%02X), Y", arg)
 	case AddressingTypeRelative:
-		fmt.Printf("$%04X      # to $%04X", arg, (currentAddr+2)+arg)
+		fmt.Printf("$%04X      # to $%04X", arg, (currentAddr+2)+int(int8(arg)))
 	}
 }

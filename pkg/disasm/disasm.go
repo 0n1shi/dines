@@ -17,7 +17,7 @@ func Disassemble(data []byte) (*Result, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	sections, err := disassembleCode(data)
+	sections, err := disassembleCode(header.ProgramBank.Count, data)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -58,11 +58,11 @@ func disassembleHeader(data []byte) (*Header, error) {
 	return header, nil
 }
 
-func disassembleCode(data []byte) ([]*Section, error) {
+func disassembleCode(programBankCount int, data []byte) ([]*Section, error) {
 	sections := []*Section{}
 	section := &Section{}
 
-	for index := HeaderSize; index < len(data); {
+	for index := HeaderSize; index < HeaderSize+(ProgramBankSize*programBankCount); {
 		line := &Line{}
 		line.Address = ProgramROMStartAt + index - HeaderSize
 

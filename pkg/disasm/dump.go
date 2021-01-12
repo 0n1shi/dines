@@ -17,7 +17,7 @@ const (
 	DumpMethodYaml   DumpMethod = DumpMethod("yaml")
 )
 
-func Dump(result *Result, method DumpMethod) {
+func Dump(result *Result, method DumpMethod, colored bool) {
 	switch method {
 	case DumpMethodJson:
 		{
@@ -31,45 +31,48 @@ func Dump(result *Result, method DumpMethod) {
 		}
 	default:
 		{
-			dumpNormal(result)
+			dumpNormal(result, colored)
 		}
 	}
 
 }
 
-func dumpNormal(result *Result) {
-	dumpHeader(result.Header)
+func dumpNormal(result *Result, colored bool) {
+	dumpHeader(result.Header, colored)
 	for _, section := range result.Sections {
 		for _, line := range section.Lines {
 			dumpAddress(line.Address)
 			fmt.Printf("\t")
-			dumpRawData(line)
+			dumpRawData(line, colored)
 			fmt.Printf("\t")
-			dumpInstruction(line)
+			dumpInstruction(line, colored)
 			fmt.Printf("\n")
 		}
 		fmt.Printf("\n")
 	}
 }
 
-func dumpHeader(header *Header) {
-	grn := color.New(color.FgHiGreen)
+func dumpHeader(header *Header, colored bool) {
+	val := color.New()
+	if colored {
+		val = color.New(color.FgHiGreen)
+	}
 	fmt.Print("magic number: ")
-	grn.Println("NES")
+	val.Println("NES")
 	fmt.Print("program Bank: ")
-	grn.Print(header.ProgramBank.Count)
+	val.Print(header.ProgramBank.Count)
 	fmt.Print(" (")
-	grn.Printf("%d byte", header.ProgramBank.Size)
+	val.Printf("%d byte", header.ProgramBank.Size)
 	fmt.Println(")")
 	fmt.Printf("character Bank: ")
-	grn.Print(header.CharacterBank.Count)
+	val.Print(header.CharacterBank.Count)
 	fmt.Print(" (")
-	grn.Printf("%d byte", header.CharacterBank.Size)
+	val.Printf("%d byte", header.CharacterBank.Size)
 	fmt.Println(")")
 	fmt.Print("mapper: ")
-	grn.Print(header.Mapper)
+	val.Print(header.Mapper)
 	fmt.Print(" (")
-	grn.Print(MapperTypeMap[header.Mapper])
+	val.Print(MapperTypeMap[header.Mapper])
 	fmt.Println(")")
 }
 
@@ -77,24 +80,40 @@ func dumpAddress(addr int) {
 	fmt.Printf("0x%04X:", addr)
 }
 
-func dumpRawData(line *Line) {
-	yellow := color.New(color.FgYellow)
+func dumpRawData(line *Line, colored bool) {
+	data := color.New()
+	if colored {
+		data = color.New(color.FgYellow)
+	}
+
 	for i := 0; i < 4; i++ {
 		if i < len(line.Data) {
-			yellow.Printf("%02X ", line.Data[i])
+			data.Printf("%02X ", line.Data[i])
 			continue
 		}
 		fmt.Print("   ")
 	}
 }
 
-func dumpInstruction(line *Line) {
-	comment := color.New(color.FgHiGreen, color.Bold)
-	reg := color.New(color.FgHiMagenta)
-	db := color.New(color.Bold)
-	opcode := color.New(color.FgHiBlue, color.Bold)
-	dollar := color.New(color.FgYellow)
-	hash := color.New(color.FgHiRed)
+func dumpInstruction(line *Line, colored bool) {
+	comment := color.New()
+	reg := color.New()
+	db := color.New()
+	opcode := color.New()
+	dollar := color.New()
+	hash := color.New()
+	bracket := color.New()
+	args := color.New()
+	if colored {
+		comment = color.New(color.FgHiGreen, color.Bold)
+		reg = color.New(color.FgHiMagenta)
+		db = color.New(color.Bold)
+		opcode = color.New(color.FgHiBlue, color.Bold)
+		dollar = color.New(color.FgYellow)
+		hash = color.New(color.FgHiRed)
+		bracket = color.New()
+		args = color.New()
+	}
 
 	if line.Instruction == nil { // invalid opcode, must be .db
 		db.Print("db ")
@@ -117,47 +136,49 @@ func dumpInstruction(line *Line) {
 	case AddressingTypeImmediate:
 		hash.Print("#")
 		dollar.Print("$")
-		fmt.Printf("%02X", arg)
+		args.Printf("%02X", arg)
 	case AddressingTypeAbsolute:
 		dollar.Print("$")
-		fmt.Printf("%04X", arg)
+		args.Printf("%04X", arg)
 	case AddressingTypeZeroPage:
 		dollar.Print("$")
-		fmt.Printf("%02X", arg)
+		args.Printf("%02X", arg)
 	case AddressingTypeIndirect:
-		fmt.Print("(")
+		bracket.Print("(")
 		dollar.Print("$")
-		fmt.Printf("%04X)", arg)
+		args.Printf("%04X", arg)
+		bracket.Print(")")
 	case AddressingTypeAbsoluteX:
 		dollar.Print("$")
-		fmt.Printf("%04X, ", arg)
+		args.Printf("%04X, ", arg)
 		reg.Print("X")
 	case AddressingTypeAbsoluteY:
 		dollar.Print("$")
-		fmt.Printf("%04X, ", arg)
+		args.Printf("%04X, ", arg)
 		reg.Print("Y")
 	case AddressingTypeZeroPageX:
 		dollar.Print("$")
-		fmt.Printf("%02X, ", arg)
+		args.Printf("%02X, ", arg)
 		reg.Print("X")
 	case AddressingTypeZeroPageY:
 		dollar.Print("$")
-		fmt.Printf("%02X, ", arg)
+		args.Printf("%02X, ", arg)
 		reg.Print("Y")
 	case AddressingTypeIndirectX:
-		fmt.Print("(")
+		bracket.Print("(")
 		dollar.Print("$")
-		fmt.Printf("%02X, ", arg)
+		args.Printf("%02X, ", arg)
 		reg.Print("X")
-		fmt.Print(")")
+		bracket.Print(")")
 	case AddressingTypeIndirectY:
-		fmt.Print("(")
+		bracket.Print("(")
 		dollar.Print("$")
-		fmt.Printf("%02X), ", arg)
+		args.Printf("%02X", arg)
+		bracket.Print("), ")
 		reg.Print("Y")
 	case AddressingTypeRelative:
 		dollar.Print("$")
-		fmt.Printf("%04X      ", arg)
+		args.Printf("%04X      ", arg)
 		comment.Printf("# to $%04X", (line.Address+2)+int(int8(arg)))
 	}
 }

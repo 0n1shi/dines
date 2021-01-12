@@ -25,6 +25,10 @@ func main() {
 			Usage:       "output format, \"json\" or \"yaml\", default is like a typical diassembler",
 			DefaultText: "normal",
 		},
+		&cli.BoolFlag{
+			Name:  "color",
+			Usage: "color output, available without \"output\" option",
+		},
 	}
 
 	app := cli.App{
@@ -54,8 +58,9 @@ func run(c *cli.Context) error {
 	}
 
 	output := c.String("output")
+	color := c.Bool("color")
 
-	disasm.Dump(result, disasm.DumpMethod(output))
+	disasm.Dump(result, disasm.DumpMethod(output), color)
 
 	return nil
 }

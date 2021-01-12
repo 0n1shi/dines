@@ -6,6 +6,8 @@ const HeaderSize = 16
 const ProgramBankSize = 0x4000
 const CharacterBankSize = 0x2000
 
+const ProgramROMStartAt = 0x8000
+
 var MapperTypeMap = map[int]string{
 	0: "NROM",
 	1: "SxROM, MMC1	",

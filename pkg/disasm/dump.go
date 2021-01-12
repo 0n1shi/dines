@@ -41,11 +41,11 @@ func dumpNormal(result *Result) {
 	address := 0x8000
 	for _, section := range result.Sections {
 		for _, line := range section.Lines {
-			dumpAddress(address)
+			dumpAddress(line.Address)
 			fmt.Printf("\t")
 			dumpRawData(line)
 			fmt.Printf("\t")
-			dumpInstruction(line, address)
+			dumpInstruction(line)
 
 			if line.Instruction == nil {
 				address++
@@ -80,7 +80,7 @@ func dumpRawData(line *Line) {
 	}
 }
 
-func dumpInstruction(line *Line, currentAddr int) {
+func dumpInstruction(line *Line) {
 	if line.Instruction == nil { // invalid opcode, must be .db
 		fmt.Print("db ")
 		for _, d := range line.Data {
@@ -119,6 +119,6 @@ func dumpInstruction(line *Line, currentAddr int) {
 	case AddressingTypeIndirectY:
 		fmt.Printf("($%02X), Y", arg)
 	case AddressingTypeRelative:
-		fmt.Printf("$%04X      # to $%04X", arg, (currentAddr+2)+int(int8(arg)))
+		fmt.Printf("$%04X      # to $%04X", arg, (line.Address+2)+int(int8(arg)))
 	}
 }

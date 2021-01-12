@@ -11,6 +11,7 @@ type Section struct {
 }
 
 type Line struct {
+	Address     int          `json:"address" yaml:"address"`
 	Data        []int        `json:"data" yaml:"data"`
 	Instruction *Instruction `json:"instruction" yaml:"instruction"`
 }

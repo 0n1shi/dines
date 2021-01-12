@@ -64,6 +64,8 @@ func disassembleCode(data []byte) ([]*Section, error) {
 
 	for index := HeaderSize; index < len(data); {
 		line := &Line{}
+		line.Address = ProgramROMStartAt + index - HeaderSize
+
 		opcode := data[index] // opcode byte
 
 		ins, ok := InstructionMap[int(opcode)] // get opcode info
@@ -95,29 +97,4 @@ func disassembleCode(data []byte) ([]*Section, error) {
 	sections = append(sections, section)
 
 	return sections, nil
-}
-
-func validateSections(sections []*Section) []*Section {
-	for _, section := range sections {
-		if !section.HasInvalidOpcode {
-			// all opcodes are valid
-			continue
-		}
-
-		// convert all into "db" opcode
-		newLines := []*Line{}
-		newLine := &Line{}
-		for _, line := range section.Lines {
-			for _, d := range line.Data {
-				newLine.Data = append(newLine.Data, d)
-				if len(newLine.Data) > 3 {
-					newLines = append(newLines, newLine)
-					newLine = &Line{}
-				}
-			}
-		}
-		section.Lines = newLines
-	}
-
-	return sections
 }

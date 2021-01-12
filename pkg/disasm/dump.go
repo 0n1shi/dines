@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/fatih/color"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -38,7 +39,6 @@ func Dump(result *Result, method DumpMethod) {
 
 func dumpNormal(result *Result) {
 	dumpHeader(result.Header)
-	address := 0x8000
 	for _, section := range result.Sections {
 		for _, line := range section.Lines {
 			dumpAddress(line.Address)
@@ -46,13 +46,6 @@ func dumpNormal(result *Result) {
 			dumpRawData(line)
 			fmt.Printf("\t")
 			dumpInstruction(line)
-
-			if line.Instruction == nil {
-				address++
-			} else {
-				address += line.Instruction.Bytes
-			}
-
 			fmt.Printf("\n")
 		}
 		fmt.Printf("\n")
@@ -60,10 +53,24 @@ func dumpNormal(result *Result) {
 }
 
 func dumpHeader(header *Header) {
-	fmt.Println("magic number: NES")
-	fmt.Printf("program Bank: %d (%d byte)\n", header.ProgramBank.Count, header.ProgramBank.Size)
-	fmt.Printf("character Bank: %d (%d byte)\n", header.CharacterBank.Count, header.CharacterBank.Size)
-	fmt.Printf("mapper: %d (%s)\n\n", header.Mapper, MapperTypeMap[header.Mapper])
+	grn := color.New(color.FgHiGreen)
+	fmt.Print("magic number: ")
+	grn.Println("NES")
+	fmt.Print("program Bank: ")
+	grn.Print(header.ProgramBank.Count)
+	fmt.Print(" (")
+	grn.Printf("%d byte", header.ProgramBank.Size)
+	fmt.Println(")")
+	fmt.Printf("character Bank: ")
+	grn.Print(header.CharacterBank.Count)
+	fmt.Print(" (")
+	grn.Printf("%d byte", header.CharacterBank.Size)
+	fmt.Println(")")
+	fmt.Print("mapper: ")
+	grn.Print(header.Mapper)
+	fmt.Print(" (")
+	grn.Print(MapperTypeMap[header.Mapper])
+	fmt.Println(")")
 }
 
 func dumpAddress(addr int) {
@@ -71,9 +78,10 @@ func dumpAddress(addr int) {
 }
 
 func dumpRawData(line *Line) {
+	yellow := color.New(color.FgYellow)
 	for i := 0; i < 4; i++ {
 		if i < len(line.Data) {
-			fmt.Printf("%02X ", line.Data[i])
+			yellow.Printf("%02X ", line.Data[i])
 			continue
 		}
 		fmt.Print("   ")
@@ -81,8 +89,15 @@ func dumpRawData(line *Line) {
 }
 
 func dumpInstruction(line *Line) {
+	comment := color.New(color.FgHiGreen, color.Bold)
+	reg := color.New(color.FgHiMagenta)
+	db := color.New(color.Bold)
+	opcode := color.New(color.FgHiBlue, color.Bold)
+	dollar := color.New(color.FgYellow)
+	hash := color.New(color.FgHiRed)
+
 	if line.Instruction == nil { // invalid opcode, must be .db
-		fmt.Print("db ")
+		db.Print("db ")
 		for _, d := range line.Data {
 			fmt.Printf("%02X ", d)
 		}
@@ -96,29 +111,53 @@ func dumpInstruction(line *Line) {
 
 	ins := line.Instruction
 
-	fmt.Printf("%s ", OpecodeMap[ins.OpcodeType])
+	opcode.Printf("%s ", OpecodeMap[ins.OpcodeType])
+
 	switch line.Instruction.AddressingType {
 	case AddressingTypeImmediate:
-		fmt.Printf("#$%02X", arg)
+		hash.Print("#")
+		dollar.Print("$")
+		fmt.Printf("%02X", arg)
 	case AddressingTypeAbsolute:
-		fmt.Printf("$%04X", arg)
+		dollar.Print("$")
+		fmt.Printf("%04X", arg)
 	case AddressingTypeZeroPage:
-		fmt.Printf("$%02X", arg)
+		dollar.Print("$")
+		fmt.Printf("%02X", arg)
 	case AddressingTypeIndirect:
-		fmt.Printf("($%04X)", arg)
+		fmt.Print("(")
+		dollar.Print("$")
+		fmt.Printf("%04X)", arg)
 	case AddressingTypeAbsoluteX:
-		fmt.Printf("$%04X, X", arg)
+		dollar.Print("$")
+		fmt.Printf("%04X, ", arg)
+		reg.Print("X")
 	case AddressingTypeAbsoluteY:
-		fmt.Printf("$%04X, Y", arg)
+		dollar.Print("$")
+		fmt.Printf("%04X, ", arg)
+		reg.Print("Y")
 	case AddressingTypeZeroPageX:
-		fmt.Printf("$%02X, X", arg)
+		dollar.Print("$")
+		fmt.Printf("%02X, ", arg)
+		reg.Print("X")
 	case AddressingTypeZeroPageY:
-		fmt.Printf("$%02X, Y", arg)
+		dollar.Print("$")
+		fmt.Printf("%02X, ", arg)
+		reg.Print("Y")
 	case AddressingTypeIndirectX:
-		fmt.Printf("($%02X, X)", arg)
+		fmt.Print("(")
+		dollar.Print("$")
+		fmt.Printf("%02X, ", arg)
+		reg.Print("X")
+		fmt.Print(")")
 	case AddressingTypeIndirectY:
-		fmt.Printf("($%02X), Y", arg)
+		fmt.Print("(")
+		dollar.Print("$")
+		fmt.Printf("%02X), ", arg)
+		reg.Print("Y")
 	case AddressingTypeRelative:
-		fmt.Printf("$%04X      # to $%04X", arg, (line.Address+2)+int(int8(arg)))
+		dollar.Print("$")
+		fmt.Printf("%04X      ", arg)
+		comment.Printf("# to $%04X", (line.Address+2)+int(int8(arg)))
 	}
 }

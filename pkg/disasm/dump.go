@@ -17,6 +17,18 @@ const (
 	DumpMethodYaml   DumpMethod = DumpMethod("yaml")
 )
 
+var (
+	hdr     *color.Color = color.New(color.FgHiGreen)
+	comment *color.Color = color.New(color.FgHiGreen, color.Bold)
+	reg     *color.Color = color.New(color.FgHiMagenta)
+	db      *color.Color = color.New(color.Bold)
+	opcode  *color.Color = color.New(color.FgHiBlue, color.Bold)
+	dollar  *color.Color = color.New(color.FgYellow)
+	hash    *color.Color = color.New(color.FgHiRed)
+	bracket *color.Color = color.New()
+	args    *color.Color = color.New()
+)
+
 func Dump(result *Result, method DumpMethod, colored bool) {
 	switch method {
 	case DumpMethodJson:
@@ -53,26 +65,25 @@ func dumpNormal(result *Result, colored bool) {
 }
 
 func dumpHeader(header *Header, colored bool) {
-	val := color.New()
-	if colored {
-		val = color.New(color.FgHiGreen)
+	if !colored {
+		hdr = color.New()
 	}
 	fmt.Print("magic number: ")
-	val.Println("NES")
+	hdr.Println("NES")
 	fmt.Print("program Bank: ")
-	val.Print(header.ProgramBank.Count)
+	hdr.Print(header.ProgramBank.Count)
 	fmt.Print(" (")
-	val.Printf("%d byte", header.ProgramBank.Size)
+	hdr.Printf("%d byte", header.ProgramBank.Size)
 	fmt.Println(")")
 	fmt.Printf("character Bank: ")
-	val.Print(header.CharacterBank.Count)
+	hdr.Print(header.CharacterBank.Count)
 	fmt.Print(" (")
-	val.Printf("%d byte", header.CharacterBank.Size)
+	hdr.Printf("%d byte", header.CharacterBank.Size)
 	fmt.Println(")")
 	fmt.Print("mapper: ")
-	val.Print(header.Mapper)
+	hdr.Print(header.Mapper)
 	fmt.Print(" (")
-	val.Print(MapperTypeMap[header.Mapper])
+	hdr.Print(MapperTypeMap[header.Mapper])
 	fmt.Println(")")
 }
 
@@ -96,21 +107,13 @@ func dumpRawData(line *Line, colored bool) {
 }
 
 func dumpInstruction(line *Line, colored bool) {
-	comment := color.New()
-	reg := color.New()
-	db := color.New()
-	opcode := color.New()
-	dollar := color.New()
-	hash := color.New()
-	bracket := color.New()
-	args := color.New()
-	if colored {
-		comment = color.New(color.FgHiGreen, color.Bold)
-		reg = color.New(color.FgHiMagenta)
-		db = color.New(color.Bold)
-		opcode = color.New(color.FgHiBlue, color.Bold)
-		dollar = color.New(color.FgYellow)
-		hash = color.New(color.FgHiRed)
+	if !colored {
+		comment = color.New()
+		reg = color.New()
+		db = color.New()
+		opcode = color.New()
+		dollar = color.New()
+		hash = color.New()
 		bracket = color.New()
 		args = color.New()
 	}

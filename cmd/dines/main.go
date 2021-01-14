@@ -51,6 +51,9 @@ func main() {
 
 func run(c *cli.Context) error {
 	romFile := c.String("rom")
+	output := c.String("output")
+	color := c.Bool("color")
+	max := c.Int("max")
 
 	data, err := ioutil.ReadFile(romFile)
 	if err != nil {
@@ -61,10 +64,6 @@ func run(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
-	output := c.String("output")
-	color := c.Bool("color")
-	max := c.Int("max")
 
 	disasm.Dump(result, disasm.DumpMethod(output), color, max)
 

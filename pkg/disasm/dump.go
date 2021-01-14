@@ -17,6 +17,7 @@ const (
 	DumpMethodYaml   DumpMethod = DumpMethod("yaml")
 )
 
+// colors for output components
 var (
 	hdr     *color.Color = color.New(color.FgHiGreen)
 	comment *color.Color = color.New(color.FgHiGreen, color.Bold)
@@ -32,19 +33,13 @@ var (
 func Dump(result *Result, method DumpMethod, colored bool, max int) {
 	switch method {
 	case DumpMethodJson:
-		{
-			j, _ := json.Marshal(result)
-			fmt.Printf("%s", j)
-		}
+		j, _ := json.Marshal(result)
+		fmt.Printf("%s", j)
 	case DumpMethodYaml:
-		{
-			y, _ := yaml.Marshal(result)
-			fmt.Printf("%s", y)
-		}
+		y, _ := yaml.Marshal(result)
+		fmt.Printf("%s", y)
 	default:
-		{
-			dumpNormal(result, colored, max)
-		}
+		dumpNormal(result, colored, max)
 	}
 
 }

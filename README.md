@@ -1,5 +1,7 @@
 # Dines
 
+![release](https://github.com/0n1shi/dines/workflows/Release/badge.svg)
+
 Disassembler for customed 8-bit microprocessor, "MOS Technology 6502" in Nintendo Entertainment System written in Golang.
 
 ## Libs

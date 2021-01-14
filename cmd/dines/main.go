@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	Version = "v0.0.1"
+	version = "unknown"
 )
 
 func main() {
@@ -39,7 +39,7 @@ func main() {
 	app := cli.App{
 		Name:    "Dines",
 		Usage:   `A disassembler for customed 8-bit microprocessor, "MOS Technology 6502" in Nintendo Entertainment System written in Golang.`,
-		Version: Version,
+		Version: version,
 		Action:  run,
 		Flags:   flags,
 	}

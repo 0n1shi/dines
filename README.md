@@ -38,6 +38,7 @@ GLOBAL OPTIONS:
 - https://github.com/urfave/cli
 - https://github.com/stretchr/testify
 - https://github.com/fatih/color
+- https://github.com/goreleaser/goreleaser
 ## Refs
 
 - https://wiki.nesdev.com/w/index.php/INES

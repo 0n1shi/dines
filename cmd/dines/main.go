@@ -9,8 +9,12 @@ import (
 	cli "github.com/urfave/cli/v2"
 )
 
-const (
-	version = "unknown"
+// vars for goreleaser
+var (
+	version = "dev"
+	commit  = ""
+	date    = ""
+	builtBy = ""
 )
 
 func main() {

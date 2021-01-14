@@ -22,6 +22,8 @@ func Disassemble(data []byte) (*Result, error) {
 		return nil, errors.WithStack(err)
 	}
 
+	sections = mergeDBLines(sections)
+
 	//sections = validateSections(sections) // not perfect, may kill valid opcodes
 
 	return &Result{
@@ -97,4 +99,31 @@ func disassembleCode(programBankCount int, data []byte) ([]*Section, error) {
 	sections = append(sections, section)
 
 	return sections, nil
+}
+
+func mergeDBLines(sections []*Section) []*Section {
+	for _, sec := range sections {
+		newLines := []*Line{}
+		dbLine := &Line{}
+		for _, line := range sec.Lines {
+			if line.Instruction != nil { // valid opcode
+				if len(dbLine.Data) > 0 {
+					newLines = append(newLines, dbLine)
+					dbLine = &Line{}
+				}
+				newLines = append(newLines, line)
+				continue
+			}
+
+			for _, d := range line.Data {
+				dbLine.Data = append(dbLine.Data, d)
+				if len(dbLine.Data) > 3 {
+					newLines = append(newLines, dbLine)
+					dbLine = &Line{}
+				}
+			}
+		}
+		sec.Lines = newLines
+	}
+	return sections
 }

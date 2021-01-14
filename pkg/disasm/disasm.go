@@ -24,8 +24,6 @@ func Disassemble(data []byte) (*Result, error) {
 
 	sections = mergeDBLines(sections)
 
-	//sections = validateSections(sections) // not perfect, may kill valid opcodes
-
 	return &Result{
 		Header:   header,
 		Sections: sections,

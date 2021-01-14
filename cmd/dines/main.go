@@ -27,7 +27,12 @@ func main() {
 		},
 		&cli.BoolFlag{
 			Name:  "color",
-			Usage: "color output, available without \"output\" option",
+			Usage: "color output (*only available without \"output\" option)",
+		},
+		&cli.IntFlag{
+			Name:  "max",
+			Usage: "max  number of lines of output excluding header information (*only available without \"output\" option)",
+			Value: -1,
 		},
 	}
 
@@ -59,8 +64,9 @@ func run(c *cli.Context) error {
 
 	output := c.String("output")
 	color := c.Bool("color")
+	max := c.Int("max")
 
-	disasm.Dump(result, disasm.DumpMethod(output), color)
+	disasm.Dump(result, disasm.DumpMethod(output), color, max)
 
 	return nil
 }

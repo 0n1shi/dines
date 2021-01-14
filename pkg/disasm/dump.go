@@ -29,7 +29,7 @@ var (
 	args    *color.Color = color.New()
 )
 
-func Dump(result *Result, method DumpMethod, colored bool) {
+func Dump(result *Result, method DumpMethod, colored bool, max int) {
 	switch method {
 	case DumpMethodJson:
 		{
@@ -43,14 +43,15 @@ func Dump(result *Result, method DumpMethod, colored bool) {
 		}
 	default:
 		{
-			dumpNormal(result, colored)
+			dumpNormal(result, colored, max)
 		}
 	}
 
 }
 
-func dumpNormal(result *Result, colored bool) {
+func dumpNormal(result *Result, colored bool, max int) {
 	dumpHeader(result.Header, colored)
+	lineCounter := 0
 	for _, section := range result.Sections {
 		for _, line := range section.Lines {
 			dumpAddress(line.Address)
@@ -59,9 +60,16 @@ func dumpNormal(result *Result, colored bool) {
 			fmt.Printf("\t")
 			dumpInstruction(line, colored)
 			fmt.Printf("\n")
+
+			lineCounter++
+			if lineCounter == max {
+				goto end
+			}
 		}
 		fmt.Printf("\n")
 	}
+
+end:
 }
 
 func dumpHeader(header *Header, colored bool) {
@@ -72,19 +80,19 @@ func dumpHeader(header *Header, colored bool) {
 	hdr.Println("NES")
 	fmt.Print("program Bank: ")
 	hdr.Print(header.ProgramBank.Count)
-	fmt.Print(" (")
+	bracket.Print(" (")
 	hdr.Printf("%d byte", header.ProgramBank.Size)
-	fmt.Println(")")
+	bracket.Println(")")
 	fmt.Printf("character Bank: ")
 	hdr.Print(header.CharacterBank.Count)
-	fmt.Print(" (")
+	bracket.Print(" (")
 	hdr.Printf("%d byte", header.CharacterBank.Size)
-	fmt.Println(")")
+	bracket.Println(")")
 	fmt.Print("mapper: ")
 	hdr.Print(header.Mapper)
-	fmt.Print(" (")
+	bracket.Print(" (")
 	hdr.Print(MapperTypeMap[header.Mapper])
-	fmt.Println(")")
+	bracket.Println(")\n")
 }
 
 func dumpAddress(addr int) {

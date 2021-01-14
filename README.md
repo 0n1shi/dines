@@ -1,6 +1,6 @@
 # Dines
 
-![](https://img.shields.io/github/v/release/0n1shi/dines?sort=date&color=success) ![license](https://img.shields.io/badge/license-MIT-blue)
+![release](https://img.shields.io/github/v/release/0n1shi/dines?sort=date&color=success) ![license](https://img.shields.io/badge/license-MIT-blue)
 
 Disassembler for customed 8-bit microprocessor, "MOS Technology 6502" in Nintendo Entertainment System written in Golang.
 
@@ -28,6 +28,9 @@ GLOBAL OPTIONS:
    --version, -v   print the version (default: false)
 ```
 
+## Example
+
+![](./asset/img/example.png)
 
 
 ## Libs
